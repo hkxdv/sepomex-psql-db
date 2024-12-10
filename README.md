@@ -84,25 +84,18 @@ sepomex/
    psql -h localhost -U postgres -d sepomex_db -f database/006_insert_codigos_postales.sql
    ```
 
-## Notas Importantes
+## Notas Importantes y Limitaciones
 
 > [!WARNING]
 >
 > - Los datos son una versión no oficial basada en la estructura de SEPOMEX
 > - Última actualización de la fuente de datos: 2021-10-01
-> - Se recomienda verificar con fuentes oficiales para usos críticos
-> - La estructura y formato siguen el estándar de códigos postales mexicanos
-
-## Limitaciones y Descargo de Responsabilidad
-
-> [!WARNING]
->
 > - Los datos pueden contener errores tipográficos
 > - No se garantiza la actualización en tiempo real
 > - Para uso oficial, se recomienda consultar directamente con SEPOMEX
 > - Este proyecto es una implementación de referencia y educativa
 
-### API REST (Repositorio Separado)
+### API REST y Proyecto Relacionado
 
 Se ha desarrollado una API REST complementaria para esta base de datos en el repositorio [sepomex-api-rest](https://github.com/hk4u-dxv/sepomex-api-rest) utilizando:
 
@@ -115,10 +108,7 @@ La API proporciona endpoints para:
 - Consulta de códigos postales
 - Búsqueda de asentamientos
 - Filtrado por estado/municipio
-- Consultas geográficas
 - Validación de códigos postales
-
-### Proyecto Relacionado
 
 - [sepomex-api-rest](https://github.com/hk4u-dxv/sepomex-api-rest) - API REST en Node.js
 
