@@ -1,11 +1,24 @@
-# SEPOMEX PostgreSQL Database
+# SEPOMEX PostgreSQL Database v2
 
-Base de datos PostgreSQL optimizada con códigos postales de México, basada en datos del Servicio Postal Mexicano (SEPOMEX).
+Base de datos PostgreSQL **optimizada** con códigos postales de México, basada en datos del Servicio Postal Mexicano (SEPOMEX).
 
 <div align="center">
   <img src="https://img.shields.io/badge/-PostgreSQL-000000?style=for-the-badge&logo=postgresql&labelColor=282c34" style="border-radius: 3px;" />
   <img src="https://img.shields.io/badge/-Python-000000?style=for-the-badge&logo=python&labelColor=282c34" style="border-radius: 3px;" />
 </div>
+
+## Descripción General
+
+Este proyecto proporciona:
+
+1.  Un **esquema de base de datos PostgreSQL v2** normalizado (3FN) y optimizado para consultas rápidas, utilizando convenciones de nomenclatura claras (`pk_`, `fk_`).
+2.  Un **script Python refactorizado** (`src/main.py`) que procesa los datos originales de SEPOMEX y genera archivos SQL para poblar la base de datos v2.
+3.  La **fuente de datos original** de SEPOMEX (actualizada a 2021-10-01).
+4.  **Documentación detallada** sobre las optimizaciones y el diseño de la v2.
+
+> [!CAUTION]
+>
+> Este repositorio es una implementación de referencia con fines educativos y de aprendizaje. **No es una fuente oficial de datos de SEPOMEX.**
 
 ## Fuente de Datos
 
@@ -13,142 +26,129 @@ Los datos originales provienen del Servicio Postal Mexicano (SEPOMEX) a través 
 
 > [!NOTE]
 >
-> - Última actualización: 2021-10-01
-> - Incluye códigos postales, colonias y municipios de todo México
-> - Los asentamientos pueden ser: colonias, fraccionamientos, barrios, ejidos, etc.
-> - Se conservan acentos y caracteres especiales en los nombres
+> - Última actualización de la fuente de datos: 2021-10-01
+> - Se conservan acentos y caracteres especiales en los nombres.
 
 ## Estructura del Proyecto
 
-```
+```plaintext
 sepomex-psql-db/
-├── backup/
-│   └── sepomex_backup.sql               # Backup en formato SQL
-│
 ├── data/
-│   ├── 001_insert_estados.sql           # Inserción de estados
-│   ├── 002_insert_municipios.sql        # Inserción de municipios
-│   ├── 003_insert_tipos_asentamiento.sql# Inserción de tipos de asentamiento
-│   ├── 004_insert_zonas.sql             # Inserción de zonas
-│   ├── 005_insert_ciudades.sql          # Inserción de ciudades
-│   └── 006_insert_codigos_postales.sql  # Inserción de códigos postales
-│
-├── query/
-│   ├── queries_detailed_lookup.sql      # Consultas detalladas
-│   └── queries_testing.sql              # Consultas de prueba y verificación
-│
-├── sepomex_sql_generator.py             # Script de procesamiento de datos
-├── sepomex_original_data.txt            # Archivo de datos original
-└── sepomex_schema.sql                   # Estructura de las tablas de base de datos
+│   ├── input/
+│   │   └── sepomex_data.txt   # Archivo de datos original
+│   └── generated_sql_v2/      # Archivos SQL generados por el script v2
+│       ├── ... (001 a 006)
+├── database/               # Definición de la BD v2 (Schema, Funciones, Índices, Vistas)
+│   ├── schema.sql
+│   ├── functions.sql
+│   ├── indexes.sql
+│   └── views.sql
+├── src/                       # Código fuente del generador SQL v2
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   ├── data_reader.py
+│   ├── data_validator.py
+│   ├── sql_generator.py
+│   ├── models.py
+│   └── utils.py
+├── docs/
+│   ├── SEPOMEX_V2.md          # Especificaciones detalladas v2
+│   └── ...
+├── legacy_v1/                 # Código y artefactos de la v1 (obsoleta)
+│   └── ...
+├── requirements.txt           # Dependencias Python
+├── .gitignore                 # Ignorar archivos generados
+├── pyproject.toml             # Configuración (black, isort)
+└── README.md
 ```
 
-## Instalación
+## Configuración y Poblado de la Base de Datos
 
-### Requisitos previos
+> [!NOTE]
+>
+> **Distribución Futura con Docker:** Se planea distribuir esta base de datos como una imagen Docker preconfigurada y poblada para facilitar su uso. Consulte futuras actualizaciones de este repositorio.
 
-- PostgreSQL 16.0 o superior
-- Python 3.12 o superior
-- pandas (`pip install pandas`)
+**Configuración Manual (si la imagen Docker no está disponible):**
 
-### Paso 1: Clonar el repositorio
+Si la imagen Docker aún no está disponible o prefiere una configuración manual, siga estos pasos:
 
-```bash
-git clone https://github.com/hk4u-dxv/sepomex-psql-db.git
-cd sepomex-psql-db
-```
+1.  **Requisitos Previos:**
 
-### Paso 2: Crear la base de datos
+    - PostgreSQL
+    - Python
+    - Git
 
-```bash
-createdb -U postgres sepomex_db
-```
+2.  **Clonar Repositorio:**
 
-### Paso 3: Crear la estructura
+    ```bash
+    git clone https://github.com/hkxdv/sepomex-psql-db.git
+    cd sepomex-psql-db
+    ```
 
-```bash
-psql -h localhost -U postgres -d sepomex_db -f sepomex_schema.sql
-```
+3.  **Entorno Python:** Configure un entorno virtual e instale dependencias:
 
-### Paso 4: Generar archivos SQL (opcional)
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # En Windows: .venv\Scripts\activate
+    pip install -r requirements.txt
+    ```
 
-Si necesitas regenerar los archivos SQL:
+4.  **Generar Archivos SQL:** Ejecute el script Python para crear los archivos de inserción:
 
-```bash
-python sepomex_sql_generator.py
-```
+    ```bash
+    python -m src.main
+    ```
 
-### Paso 5: Importar datos
+    (Los archivos `.sql` se generarán en `data/generated_sql_v2/`)
 
-```bash
-cd data
-psql -h localhost -U postgres -d sepomex_db -f 001_insert_estados.sql
-psql -h localhost -U postgres -d sepomex_db -f 002_insert_municipios.sql
-psql -h localhost -U postgres -d sepomex_db -f 003_insert_tipos_asentamiento.sql
-psql -h localhost -U postgres -d sepomex_db -f 004_insert_zonas.sql
-psql -h localhost -U postgres -d sepomex_db -f 005_insert_ciudades.sql
-psql -h localhost -U postgres -d sepomex_db -f 006_insert_codigos_postales.sql
-```
+5.  **Crear y Estructurar Base de Datos:** Cree una base de datos PostgreSQL (ej. `sepomex_psql_db_v2`) y aplique la estructura:
 
-> [!IMPORTANT]
-> Es crucial seguir este orden de ejecución para mantener la integridad de las relaciones entre tablas.
+    ```bash
+    createdb -U postgres sepomex_psql_db_v2
+    psql -U postgres -d sepomex_psql_db_v2 -f database/schema.sql
+    psql -U postgres -d sepomex_psql_db_v2 -f database/indexes.sql
+    psql -U postgres -d sepomex_psql_db_v2 -f database/views.sql
+    psql -U postgres -d sepomex_psql_db_v2 -f database/functions.sql
+    ```
 
-## Uso y consultas
+6.  **Importar Datos:** Ejecute los scripts SQL generados en el paso 5, **en orden numérico**, dentro del directorio `data/generated_sql_v2/`:
+    ```bash
+    cd data/generated_sql_v2
+    # Ejemplo para Linux/macOS:
+    for f in $(ls 00*.sql | sort); do psql -U postgres -d sepomex_psql_db_v2 -f "$f"; done
+    ```
 
-Ejemplos de consultas básicas:
+## Consultas de Ejemplo
 
-```sql
--- Buscar por código postal
-SELECT * FROM codigos_postales WHERE codigo_postal = '29000';
+Para ver ejemplos de consultas detalladas usando las funciones PL/pgSQL y consultas para verificar la integridad, consulta:
 
--- Buscar asentamientos que contengan "centro" en su nombre
-SELECT * FROM codigos_postales WHERE nombre_asentamiento ILIKE '%centro%';
-
--- Buscar por estado y municipio
-SELECT cp.* FROM codigos_postales cp
-JOIN estados e ON cp.codigo_estado = e.codigo_estado
-JOIN municipios m ON cp.codigo_municipio = m.codigo_municipio AND cp.codigo_estado = m.codigo_estado
-WHERE e.nombre_estado = 'Chiapas' AND m.nombre_municipio = 'Tuxtla Gutiérrez';
-```
-
-Consulta el directorio `query/` para ver más ejemplos de consultas.
+- **[queries/detailed_lookup_v2](queries/detailed_lookup_v2.sql)**.
+- **[queries/testing_v2](queries/testing_v2.sql)**.
 
 ## Estructura de la Base de Datos
 
-La base de datos cuenta con las siguientes tablas principales:
-
-1. **estados**: Catálogo de estados de México
-2. **municipios**: Catálogo de municipios con relación a estados
-3. **ciudades**: Ciudades importantes con relación a estados
-4. **tipos_asentamiento**: Catálogo de tipos de asentamiento (colonia, barrio, etc.)
-5. **zonas**: Clasificación de zonas (Urbana, Rural, Semiurbana)
-6. **codigos_postales**: Tabla principal con todos los códigos postales y sus relaciones
-
-Todas las tablas incluyen timestamps de creación/actualización y restricciones de integridad.
+Para una descripción detallada de las optimizaciones, el análisis de endpoints y las especificaciones completas, consulta: **[docs/SEPOMEX_V2.md](docs/SEPOMEX_V2.md)**.
 
 > [!WARNING]
 >
-> - Los datos son una versión no oficial basada en la estructura de SEPOMEX
-> - Última actualización de la fuente de datos: 2021-10-01
-> - Para uso oficial, se recomienda consultar directamente con SEPOMEX
-> - Este proyecto es una implementación de referencia y educativa
+> **Limitaciones y Advertencias**
+>
+> - Los datos **no son oficiales** y provienen de una copia de 2021.
+> - Para información actualizada y oficial, consulte directamente con **SEPOMEX**.
 
 ## Proyecto Relacionado
 
-Se ha desarrollado una API REST complementaria para esta base de datos:
+Se ha desarrollado una API REST complementaria para esta base de datos v2:
 
-<a href="https://github.com/hk4u-dxv/sepomex-api-rest">
+<a href="https://github.com/hkxdv/sepomex-api-rest">
   <img src="https://img.shields.io/badge/-sepomex--api--rest-000000?style=for-the-badge&logo=github&labelColor=282c34" style="border-radius: 3px;" />
 </a>
 
-La API proporciona endpoints para:
-
-- Consulta de códigos postales
-- Búsqueda de asentamientos
-- Filtrado por estado/municipio
-- Validación de códigos postales
+La API proporciona endpoints para consultas basadas en las funciones optimizadas de la BD v2.
 
 ## 🥷 Autor
 
-<a href="https://github.com/hk4u-dxv">
-  <img src="https://img.shields.io/badge/-hk4u--dxv-000000?style=for-the-badge&logo=github&labelColor=282c34" style="border-radius: 3px;" />
+<a href="https://github.com/hkxdv">
+  <img src="https://img.shields.io/badge/-hkxdv-000000?style=for-the-badge&logo=github&labelColor=282c34" style="border-radius: 3px;" />
 </a>
