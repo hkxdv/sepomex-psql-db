@@ -102,6 +102,11 @@ Si la imagen Docker aún no está disponible o prefiere una configuración manua
 
     (Los archivos `.sql` se generarán en `data/generated_sql_v2/`)
 
+    > [!TIP]
+    >
+    > El script generará un archivo de log detallado en `logs/sepomex_generator.log`.
+    > Puedes ver un ejemplo de la salida del log en **[docs/log_example.md](docs/log_example.md)**.
+
 5.  **Crear y Estructurar Base de Datos:** Cree una base de datos PostgreSQL (ej. `sepomex_psql_db_v2`) y aplique la estructura:
 
     ```bash
