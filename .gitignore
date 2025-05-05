@@ -1,0 +1,37 @@
+# Archivos de Python compilado y caché
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Directorios virtuales
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Archivos de configuración de IDEs y editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos generados por el script
+data/generated_sql_v2/
+logs/
+*.log
+
+# Artefactos de versión anterior
+legacy_v1/data_generated/
+
+# Otros
+*.bak
+*.swp
