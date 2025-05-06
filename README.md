@@ -24,9 +24,12 @@ Este proyecto proporciona:
 
 Los datos originales provienen del Servicio Postal Mexicano (SEPOMEX) a través de su página oficial, aunque fueron obtenidos de [VIDELCLOUD](https://videlcloud.wordpress.com/2017/01/17/descarga-la-base-de-datos-de-codigos-postales-colonias-municipios-y-estados-de-todo-mexico/) que mantiene una copia actualizada al 2021-10-01.
 
-> [!NOTE]
+> [!WARNING]
 >
-> - Última actualización de la fuente de datos: 2021-10-01
+> **Limitaciones y Advertencias**
+>
+> - Los datos **no son oficiales** y provienen de una copia de 2021.
+> - Para información actualizada y oficial, consulte directamente con **SEPOMEX**.
 > - Se conservan acentos y caracteres especiales en los nombres.
 
 ## Estructura del Proyecto
@@ -102,27 +105,20 @@ Si la imagen Docker aún no está disponible o prefiere una configuración manua
 
     (Los archivos `.sql` se generarán en `data/generated_sql_v2/`)
 
-    > [!TIP]
-    >
-    > El script generará un archivo de log detallado en `logs/sepomex_generator.log`.
-    > Puedes ver un ejemplo de la salida del log en **[docs/log_example.md](docs/log_example.md)**.
+> [!TIP]
+>
+> El script generará un archivo de log detallado en `logs/sepomex_generator.log`.
+> Puedes ver un ejemplo de la salida del log en **[docs/log_example.md](docs/log_example.md)**.
 
 5.  **Crear y Estructurar Base de Datos:** Cree una base de datos PostgreSQL (ej. `sepomex_psql_db_v2`) y aplique la estructura:
 
-    ```bash
-    createdb -U postgres sepomex_psql_db_v2
-    psql -U postgres -d sepomex_psql_db_v2 -f database/schema.sql
-    psql -U postgres -d sepomex_psql_db_v2 -f database/indexes.sql
-    psql -U postgres -d sepomex_psql_db_v2 -f database/views.sql
-    psql -U postgres -d sepomex_psql_db_v2 -f database/functions.sql
-    ```
+- En orden:
+  - `schema.sql`
+  - `indexes.sql`
+  - `views.sql`
+  - `functions.sql`
 
 6.  **Importar Datos:** Ejecute los scripts SQL generados en el paso 5, **en orden numérico**, dentro del directorio `data/generated_sql_v2/`:
-    ```bash
-    cd data/generated_sql_v2
-    # Ejemplo para Linux/macOS:
-    for f in $(ls 00*.sql | sort); do psql -U postgres -d sepomex_psql_db_v2 -f "$f"; done
-    ```
 
 ## Consultas de Ejemplo
 
@@ -135,12 +131,9 @@ Para ver ejemplos de consultas detalladas usando las funciones PL/pgSQL y consul
 
 Para una descripción detallada de las optimizaciones, el análisis de endpoints y las especificaciones completas, consulta: **[docs/SEPOMEX_V2.md](docs/SEPOMEX_V2.md)**.
 
-> [!WARNING]
+> [!NOTE]
 >
-> **Limitaciones y Advertencias**
->
-> - Los datos **no son oficiales** y provienen de una copia de 2021.
-> - Para información actualizada y oficial, consulte directamente con **SEPOMEX**.
+> El documento `SEPOMEX_V2.md` incluye un análisis sobre la "duplicidad funcional" observada en los datos fuente (registros distintos con campos similares).
 
 ## Proyecto Relacionado
 
